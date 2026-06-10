@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Health Care Client
 
-## Getting Started
+A Next.js App Router healthcare dashboard client with authentication, Redux Toolkit state management, RTK Query API calls, and role-based access control for admin, doctor, and patient users.
 
-First, run the development server:
+## Tech Stack
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- shadcn/ui-style components
+- Redux Toolkit
+- RTK Query
+- React Hook Form
+- Zod
+- Lucide React icons
+
+## Features
+
+- Login page
+- Register page
+- Forgot password UI
+- Mock Next.js API route handlers
+- Redux auth state
+- RTK Query auth requests
+- Access token persistence in `localStorage` for demo use
+- Auth restoration after refresh
+- Logout flow
+- Protected dashboard routes
+- Role-based dashboard guards
+- Role-based redirect from `/dashboard`
+- Unauthorized page
+- Responsive healthcare SaaS UI
+
+## Demo Credentials
+
+```text
+Admin
+email: admin@healthcare.com
+password: password123
+
+Doctor
+email: doctor@healthcare.com
+password: password123
+
+Patient
+email: patient@healthcare.com
+password: password123
+```
+
+## Auth And RBAC Flow
+
+The app uses mock API handlers under `/api/auth/*`.
+
+```text
+POST /api/auth/login
+POST /api/auth/register
+POST /api/auth/logout
+GET  /api/auth/me
+```
+
+Login and register return:
+
+```ts
+{
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: "admin" | "doctor" | "patient";
+  };
+  accessToken: string;
+}
+```
+
+The frontend stores this demo token and user in `localStorage`, then restores them on app load through `AuthProvider`.
+
+Route behavior:
+
+- Guest users are redirected away from `/dashboard/*` to `/login`.
+- Logged-in users are redirected away from `/login` and `/register` to their dashboard.
+- `/dashboard` redirects to the current user's role dashboard.
+- Admin users can access `/dashboard/admin`.
+- Doctor users can access `/dashboard/doctor`.
+- Patient users can access `/dashboard/patient`.
+- Wrong-role access redirects to `/unauthorized`.
+
+## Project Structure
+
+```text
+src/
+  app/
+    api/auth/
+    dashboard/
+    forgot-password/
+    login/
+    register/
+    unauthorized/
+  components/
+    auth/
+    dashboard/
+    ui/
+  lib/
+    validations/
+    auth.ts
+    utils.ts
+  redux/
+    features/auth/
+    provider.tsx
+    store.ts
+  types/
+    auth.ts
+```
+
+## Run Locally
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Verification
 
-## Learn More
+Run lint:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run lint
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Run production build:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run build
+```
 
-## Deploy on Vercel
+## Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project intentionally uses mock API routes and `localStorage` token persistence because it is a frontend demo. For production, replace the mock handlers with a real backend and prefer secure HTTP-only cookies or another hardened session strategy.
