@@ -1,11 +1,9 @@
 "use client";
 
-import { CalendarCheck, Clock3, Stethoscope, UsersRound } from "lucide-react";
 import { RoleGuard } from "@/components/auth/RoleGuard";
+import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { StatCard } from "@/components/dashboard/StatCard";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AdminDashboardPage() {
   return (
@@ -23,49 +21,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            title="Total doctors"
-            value="48"
-            helper="12 specialties covered"
-            icon={Stethoscope}
-          />
-          <StatCard
-            title="Total patients"
-            value="1,284"
-            helper="86 new this month"
-            icon={UsersRound}
-          />
-          <StatCard
-            title="Total appointments"
-            value="3,492"
-            helper="Across all departments"
-            icon={CalendarCheck}
-          />
-          <StatCard
-            title="Pending appointments"
-            value="37"
-            helper="Need admin review"
-            icon={Clock3}
-          />
-        </div>
-
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Operational priorities</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-3 text-sm text-slate-600 md:grid-cols-3">
-            <div className="rounded-md bg-slate-50 p-4">
-              Verify new doctor profile documents.
-            </div>
-            <div className="rounded-md bg-slate-50 p-4">
-              Review pending appointment conflicts.
-            </div>
-            <div className="rounded-md bg-slate-50 p-4">
-              Monitor payment settlement status.
-            </div>
-          </CardContent>
-        </Card>
+        <DashboardContent />
       </DashboardLayout>
     </RoleGuard>
   );
