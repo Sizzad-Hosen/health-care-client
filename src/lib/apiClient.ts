@@ -1,5 +1,3 @@
-import { readPersistedAuth } from "@/lib/auth";
-
 export class ApiClientError extends Error {
   status: number;
 
@@ -11,16 +9,7 @@ export class ApiClientError extends Error {
 }
 
 function getApiBaseUrl(): string {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-  if (!baseUrl) {
-    throw new ApiClientError(
-      "NEXT_PUBLIC_API_BASE_URL is not configured. Add it to .env.local.",
-      0,
-    );
-  }
-
-  return baseUrl.replace(/\/$/, "");
+  return "/api/backend";
 }
 
 export async function apiClient<T>(
@@ -28,15 +17,10 @@ export async function apiClient<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const baseUrl = getApiBaseUrl();
-  const auth = readPersistedAuth();
   const headers = new Headers(options.headers);
 
   if (!headers.has("Content-Type") && options.body) {
     headers.set("Content-Type", "application/json");
-  }
-
-  if (auth?.accessToken) {
-    headers.set("Authorization", `Bearer ${auth.accessToken}`);
   }
 
   const response = await fetch(`${baseUrl}${path}`, {

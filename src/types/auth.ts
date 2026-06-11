@@ -16,7 +16,7 @@ export type AuthState = {
 
 export type AuthResponse = {
   user: AuthUser;
-  accessToken: string;
+  accessToken?: string | null;
 };
 
 export type LoginRequest = {
@@ -28,5 +28,7 @@ export type RegisterRequest = {
   name: string;
   email: string;
   password: string;
-  role: UserRole;
+  contactNumber: string;
+  address: string;
+  role: "patient";
 };

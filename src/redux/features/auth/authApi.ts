@@ -5,21 +5,11 @@ import {
   RegisterRequest,
   AuthUser,
 } from "@/types/auth";
-import type { RootState } from "@/redux/store";
 
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.accessToken;
-
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-      }
-
-      return headers;
-    },
   }),
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginRequest>({

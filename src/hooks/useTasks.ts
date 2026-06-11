@@ -55,12 +55,14 @@ export function useTasks() {
       setMutationStatus("success");
       await loadTasks();
     } catch (caughtError) {
-      setMutationStatus("error");
-      setError(
+      const message =
         caughtError instanceof Error
           ? caughtError.message
-          : "Failed to create task.",
-      );
+          : "Failed to create task.";
+
+      setMutationStatus("error");
+      setError(message);
+      throw new Error(message);
     }
   };
 
@@ -75,12 +77,14 @@ export function useTasks() {
       setMutationStatus("success");
       await loadTasks();
     } catch (caughtError) {
-      setMutationStatus("error");
-      setError(
+      const message =
         caughtError instanceof Error
           ? caughtError.message
-          : "Failed to update task.",
-      );
+          : "Failed to update task.";
+
+      setMutationStatus("error");
+      setError(message);
+      throw new Error(message);
     }
   };
 
@@ -95,12 +99,14 @@ export function useTasks() {
       setMutationStatus("success");
       await loadTasks();
     } catch (caughtError) {
-      setMutationStatus("error");
-      setError(
+      const message =
         caughtError instanceof Error
           ? caughtError.message
-          : "Failed to delete task.",
-      );
+          : "Failed to delete task.";
+
+      setMutationStatus("error");
+      setError(message);
+      throw new Error(message);
     }
   };
 

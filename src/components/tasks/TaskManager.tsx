@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/toast";
 import { useTasks } from "@/hooks/useTasks";
 import { CreateTaskRequest, Task, TaskPriority, TaskStatus } from "@/types/task";
 
@@ -20,6 +21,7 @@ const initialForm: CreateTaskRequest = {
 };
 
 export function TaskManager() {
+  const { toast } = useToast();
   const {
     createTask,
     deleteTask,
@@ -53,14 +55,35 @@ export function TaskManager() {
       dueDate: form.dueDate || undefined,
     };
 
-    if (editingTask) {
-      await updateTask(editingTask.id, payload);
-      setEditingTask(null);
-    } else {
-      await createTask(payload);
-    }
+    try {
+      if (editingTask) {
+        await updateTask(editingTask.id, payload);
+        toast({
+          title: "Task updated",
+          description: "The task changes were synced with the backend.",
+          variant: "success",
+        });
+        setEditingTask(null);
+      } else {
+        await createTask(payload);
+        toast({
+          title: "Task created",
+          description: "The new task was saved to the backend.",
+          variant: "success",
+        });
+      }
 
-    setForm(initialForm);
+      setForm(initialForm);
+    } catch (caughtError) {
+      toast({
+        title: editingTask ? "Update failed" : "Create failed",
+        description:
+          caughtError instanceof Error
+            ? caughtError.message
+            : "The backend could not save this task.",
+        variant: "error",
+      });
+    }
   };
 
   const handleEdit = (task: Task) => {
@@ -81,7 +104,23 @@ export function TaskManager() {
       return;
     }
 
-    await deleteTask(task.id);
+    try {
+      await deleteTask(task.id);
+      toast({
+        title: "Task deleted",
+        description: "The task was removed from the backend.",
+        variant: "info",
+      });
+    } catch (caughtError) {
+      toast({
+        title: "Delete failed",
+        description:
+          caughtError instanceof Error
+            ? caughtError.message
+            : "The backend could not delete this task.",
+        variant: "error",
+      });
+    }
   };
 
   return (

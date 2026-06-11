@@ -1,21 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
-import { userFromToken } from "@/lib/auth";
+import { NextResponse } from "next/server";
+import { toAuthUser } from "@/lib/auth";
+import {
+  authenticatedBackendRequest,
+  BackendApiError,
+} from "@/lib/server/backend";
 
-export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get("authorization");
-  const token = authHeader?.startsWith("Bearer ")
-    ? authHeader.slice("Bearer ".length)
-    : null;
+export async function GET() {
+  try {
+    const profile = await authenticatedBackendRequest<Record<string, unknown>>(
+      "/api/v1/user/me",
+    );
 
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ user: toAuthUser(profile.data ?? {}) });
+  } catch (error) {
+    const status = error instanceof BackendApiError ? error.status : 500;
+    const message = error instanceof Error ? error.message : "Unauthorized";
+
+    return NextResponse.json(
+      { message },
+      { status: status > 0 ? status : 500 },
+    );
   }
-
-  const user = userFromToken(token);
-
-  if (!user) {
-    return NextResponse.json({ message: "Invalid token" }, { status: 401 });
-  }
-
-  return NextResponse.json({ user });
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { ToastProvider } from "@/components/ui/toast";
 import { ReduxProvider } from "@/redux/provider";
 import "./globals.css";
 
@@ -31,7 +32,9 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-white text-slate-950">
         <ReduxProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <ToastProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </ToastProvider>
         </ReduxProvider>
       </body>
     </html>

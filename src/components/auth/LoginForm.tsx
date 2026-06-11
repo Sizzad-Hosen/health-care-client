@@ -23,17 +23,19 @@ import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { setCredentials } from "@/redux/features/auth/authSlice";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
+import { useToast } from "@/components/ui/toast";
 
 export function LoginForm() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
+  const { toast } = useToast();
   const [login, { isLoading }] = useLoginMutation();
   const [error, setError] = useState<string | null>(null);
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "admin@healthcare.com",
-      password: "password123",
+      email: "",
+      password: "",
     },
   });
 
@@ -43,9 +45,19 @@ export function LoginForm() {
     try {
       const result = await login(values).unwrap();
       dispatch(setCredentials(result));
+      toast({
+        title: "Signed in",
+        description: `Welcome back, ${result.user.name}.`,
+        variant: "success",
+      });
       router.replace(roleDashboardPath[result.user.role]);
     } catch {
       setError("Invalid email or password.");
+      toast({
+        title: "Sign in failed",
+        description: "Please verify your email and password.",
+        variant: "error",
+      });
     }
   };
 
@@ -99,10 +111,8 @@ export function LoginForm() {
         </Form>
 
         <div className="mt-6 rounded-md bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="font-medium text-slate-800">Demo credentials</p>
-          <p>admin@healthcare.com / password123</p>
-          <p>doctor@healthcare.com / password123</p>
-          <p>patient@healthcare.com / password123</p>
+          <p className="font-medium text-slate-800">Backend required</p>
+          <p>Use a real account from the Express API database.</p>
         </div>
 
         <p className="mt-6 text-center text-sm text-slate-500">
