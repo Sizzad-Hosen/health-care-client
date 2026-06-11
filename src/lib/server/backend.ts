@@ -96,6 +96,10 @@ export async function getAccessToken() {
   return (await cookies()).get(ACCESS_TOKEN_COOKIE)?.value ?? null;
 }
 
+export async function getRefreshToken() {
+  return (await cookies()).get(REFRESH_TOKEN_COOKIE)?.value ?? null;
+}
+
 export async function setAuthCookies(tokens: {
   accessToken: string;
   refreshToken?: string;
@@ -146,4 +150,35 @@ export async function authenticatedBackendRequest<T>(
     ...options,
     headers,
   });
+}
+
+export async function refreshAccessToken() {
+  const refreshToken = await getRefreshToken();
+
+  if (!refreshToken) {
+    throw new BackendApiError("Refresh token is missing", 401);
+  }
+
+  const refresh = await backendRequest<{
+    accessToken: string;
+    refreshToken?: string;
+  }>("/api/v1/auth/refreshtoken", {
+    method: "POST",
+    headers: {
+      Cookie: `refreshToken=${refreshToken}`,
+    },
+  });
+
+  const accessToken = refresh.data?.accessToken;
+
+  if (!accessToken) {
+    throw new BackendApiError("Refresh did not return an access token", 502);
+  }
+
+  await setAuthCookies({
+    accessToken,
+    refreshToken: refresh.data?.refreshToken,
+  });
+
+  return accessToken;
 }

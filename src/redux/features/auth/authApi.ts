@@ -1,8 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   AuthResponse,
+  ChangePasswordRequest,
+  ForgotPasswordRequest,
   LoginRequest,
+  MessageResponse,
   RegisterRequest,
+  ResetPasswordRequest,
   AuthUser,
 } from "@/types/auth";
 
@@ -73,6 +77,33 @@ export const authApi = createApi({
         body,
       }),
     }),
+    refreshToken: builder.mutation<AuthResponse, void>({
+      query: () => ({
+        url: "/api/auth/refresh-token",
+        method: "POST",
+      }),
+    }),
+    forgotPassword: builder.mutation<MessageResponse, ForgotPasswordRequest>({
+      query: (body) => ({
+        url: "/api/auth/forgot-password",
+        method: "POST",
+        body,
+      }),
+    }),
+    resetPassword: builder.mutation<MessageResponse, ResetPasswordRequest>({
+      query: (body) => ({
+        url: "/api/auth/reset-password",
+        method: "POST",
+        body,
+      }),
+    }),
+    changePassword: builder.mutation<MessageResponse, ChangePasswordRequest>({
+      query: (body) => ({
+        url: "/api/auth/change-password",
+        method: "POST",
+        body,
+      }),
+    }),
 
 
     createPatient: builder.mutation<unknown, RegisterRequest>({
@@ -105,6 +136,10 @@ export const authApi = createApi({
 
 export const {
   useLoginMutation,
+  useRefreshTokenMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+  useChangePasswordMutation,
   useLogoutUserMutation,
   useMeQuery,
   useCreatePatientMutation,

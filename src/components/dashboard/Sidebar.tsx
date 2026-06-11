@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, CalendarDays, CheckSquare, LayoutDashboard, Shield, Stethoscope, UserRound } from "lucide-react";
+import { Activity, CalendarDays, CheckSquare, KeyRound, LayoutDashboard, Shield, Stethoscope, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserRole } from "@/types/auth";
 
@@ -61,6 +61,18 @@ export function Sidebar({ role }: { role: UserRole }) {
         >
           <CheckSquare className="h-4 w-4" />
           Tasks
+        </Link>
+        <Link
+          href="/dashboard/change-password"
+          className={cn(
+            "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+            pathname === "/dashboard/change-password"
+              ? "bg-emerald-50 text-emerald-700"
+              : "text-slate-600 hover:bg-slate-50",
+          )}
+        >
+          <KeyRound className="h-4 w-4" />
+          Change password
         </Link>
         <div className="py-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
           Role Access

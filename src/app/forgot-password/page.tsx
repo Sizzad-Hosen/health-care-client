@@ -6,7 +6,7 @@ export default function ForgotPasswordPage() {
     <AuthShell
       eyebrow="Password recovery"
       title="Reset your password"
-      description="Enter your account email to see the password reset confirmation UI."
+      description="Enter your account email and the backend will send a reset link."
     >
       <ForgotPasswordForm />
     </AuthShell>

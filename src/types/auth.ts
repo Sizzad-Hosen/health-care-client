@@ -24,6 +24,25 @@ export type LoginRequest = {
   password: string;
 };
 
+export type ForgotPasswordRequest = {
+  email: string;
+};
+
+export type ResetPasswordRequest = {
+  token: string;
+  password: string;
+};
+
+export type ChangePasswordRequest = {
+  oldPassword: string;
+  newPassword: string;
+};
+
+export type MessageResponse = {
+  success?: boolean;
+  message?: string;
+};
+
 export type RegisterRequest = {
   name: string;
   email: string;
