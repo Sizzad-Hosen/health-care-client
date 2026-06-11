@@ -7,6 +7,19 @@ export type AuthUser = {
   role: UserRole;
 };
 
+export type UserProfile = AuthUser & {
+  contactNumber?: string;
+  address?: string;
+  profilePhoto?: string;
+  registrationNumber?: string;
+  experience?: number;
+  gender?: "MALE" | "FEMALE";
+  appointmentFee?: number;
+  qualification?: string;
+  currentWorkingPlace?: string;
+  designation?: string;
+};
+
 export type AuthState = {
   user: AuthUser | null;
   accessToken: string | null;
@@ -41,6 +54,24 @@ export type ChangePasswordRequest = {
 export type MessageResponse = {
   success?: boolean;
   message?: string;
+};
+
+export type ProfileResponse = {
+  user: UserProfile;
+};
+
+export type UpdateProfileRequest = {
+  name?: string;
+  contactNumber?: string;
+  address?: string;
+  registrationNumber?: string;
+  experience?: number | string;
+  gender?: "MALE" | "FEMALE";
+  appointmentFee?: number | string;
+  qualification?: string;
+  currentWorkingPlace?: string;
+  designation?: string;
+  file?: File | null;
 };
 
 export type RegisterRequest = {

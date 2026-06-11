@@ -5,8 +5,10 @@ import {
   ForgotPasswordRequest,
   LoginRequest,
   MessageResponse,
+  ProfileResponse,
   RegisterRequest,
   ResetPasswordRequest,
+  UpdateProfileRequest,
   AuthUser,
 } from "@/types/auth";
 
@@ -60,6 +62,35 @@ function createDoctorFormData(body: RegisterRequest) {
       },
     }),
   );
+
+  return formData;
+}
+
+function createProfileFormData(body: UpdateProfileRequest) {
+  const { file, ...profile } = body;
+  const cleanProfile = Object.fromEntries(
+    Object.entries(profile).filter(([, value]) => value !== "" && value !== undefined),
+  );
+  const formData = new FormData();
+
+  formData.append(
+    "data",
+    JSON.stringify({
+      ...cleanProfile,
+      experience:
+        cleanProfile.experience === undefined
+          ? undefined
+          : Number(cleanProfile.experience),
+      appointmentFee:
+        cleanProfile.appointmentFee === undefined
+          ? undefined
+          : Number(cleanProfile.appointmentFee),
+    }),
+  );
+
+  if (file) {
+    formData.append("file", file);
+  }
 
   return formData;
 }
@@ -131,6 +162,16 @@ export const authApi = createApi({
     me: builder.query<{ user: AuthUser }, void>({
       query: () => "/api/auth/me",
     }),
+    profile: builder.query<ProfileResponse, void>({
+      query: () => "/api/auth/profile",
+    }),
+    updateProfile: builder.mutation<ProfileResponse & MessageResponse, UpdateProfileRequest>({
+      query: (body) => ({
+        url: "/api/auth/profile",
+        method: "PATCH",
+        body: createProfileFormData(body),
+      }),
+    }),
   }),
 });
 
@@ -144,4 +185,6 @@ export const {
   useMeQuery,
   useCreatePatientMutation,
   useCreateDoctorMutation,
+  useProfileQuery,
+  useUpdateProfileMutation,
 } = authApi;

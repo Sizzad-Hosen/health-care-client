@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, KeyRound } from "lucide-react";
+import { ChevronDown, KeyRound, UserCog } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +48,12 @@ export function Topbar() {
               <DropdownMenuItem className="flex-col items-start gap-0">
                 <span className="font-medium">{user?.name}</span>
                 <span className="text-xs text-slate-500">{user?.email}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/profile" className="flex items-center gap-2">
+                  <UserCog className="h-4 w-4" />
+                  My profile
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/change-password" className="flex items-center gap-2">
