@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function AdminDashboardPage() {
   return (
-    <RoleGuard allowedRole="admin">
+    <RoleGuard allowedRole={["admin", "super_admin"]}>
       <DashboardLayout role="admin">
         <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>

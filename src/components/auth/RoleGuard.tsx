@@ -11,7 +11,7 @@ export function RoleGuard({
   allowedRole,
   children,
 }: {
-  allowedRole: UserRole;
+  allowedRole: UserRole | UserRole[];
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -29,12 +29,16 @@ export function RoleGuard({
       return;
     }
 
-    if (user && user.role !== allowedRole) {
+    const allowedRoles = Array.isArray(allowedRole) ? allowedRole : [allowedRole];
+
+    if (user && !allowedRoles.includes(user.role)) {
       router.replace("/unauthorized");
     }
   }, [allowedRole, isAuthenticated, isInitialized, router, user]);
 
-  if (!isInitialized || !isAuthenticated || user?.role !== allowedRole) {
+  const allowedRoles = Array.isArray(allowedRole) ? allowedRole : [allowedRole];
+
+  if (!isInitialized || !isAuthenticated || !user || !allowedRoles.includes(user.role)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 text-sm text-slate-500">
         Checking access...

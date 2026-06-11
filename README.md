@@ -49,16 +49,30 @@ password: password123
 
 ## Auth And RBAC Flow
 
-The app currently uses frontend demo auth handlers under `/api/auth/*` for local role switching. Backend data calls use the configured Express API URL from `NEXT_PUBLIC_API_BASE_URL`.
+Login uses the frontend `/api/auth/login` route so the app can set secure auth cookies after calling the Express backend. Registration uses RTK Query to call the Express backend create-user endpoints directly, then calls the same central login mutation.
 
 ```text
 POST /api/auth/login
-POST /api/auth/register
 POST /api/auth/logout
 GET  /api/auth/me
+
+POST {NEXT_PUBLIC_API_BASE_URL}/user/create-patient
+POST {NEXT_PUBLIC_API_BASE_URL}/user/create-doctor
 ```
 
-Login and register return:
+Registration flow:
+
+```text
+RegisterForm
+  -> useCreatePatientMutation() or useCreateDoctorMutation()
+  -> backend create user endpoint with multipart/form-data
+  -> useLoginMutation()
+  -> /api/auth/login
+  -> backend /api/v1/auth/login
+  -> role dashboard
+```
+
+Login returns:
 
 ```ts
 {
@@ -72,7 +86,7 @@ Login and register return:
 }
 ```
 
-The frontend stores this demo token and user in `localStorage`, then restores them on app load through `AuthProvider`.
+The frontend stores the authenticated user in Redux and uses the auth cookie for server-backed session restoration through `AuthProvider`.
 
 Route behavior:
 
@@ -125,10 +139,10 @@ Create local env:
 cp .env.example .env.local
 ```
 
-Set the backend URL:
+Set the backend URL. The current auth API expects the versioned API base:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api/v1
 ```
 
 Start the dev server:
@@ -193,4 +207,4 @@ Current backend gap:
 
 ## Notes
 
-This project still uses demo auth and `localStorage` token persistence for frontend role switching. For production, connect auth fully to the Express backend and prefer secure HTTP-only cookies or another hardened session strategy.
+This project uses the Express backend for auth. Keep using HTTP-only cookies or another hardened session strategy for production.

@@ -13,7 +13,7 @@ const safeCount = async (path: string): Promise<number> => {
 };
 
 export async function getDashboardData(user: AuthUser): Promise<DashboardData> {
-  if (user.role === "admin") {
+  if (user.role === "admin" || user.role === "super_admin") {
     const [doctorCount, patientCount, appointmentCount] = await Promise.all([
       safeCount("/api/v1/doctor"),
       safeCount("/api/v1/patient"),

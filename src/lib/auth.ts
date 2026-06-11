@@ -2,12 +2,14 @@ import { AuthUser, UserRole } from "@/types/auth";
 
 export const roleDashboardPath: Record<UserRole, string> = {
   admin: "/dashboard/admin",
+  super_admin: "/dashboard/admin",
   doctor: "/dashboard/doctor",
   patient: "/dashboard/patient",
 };
 
 export const roleLabels: Record<UserRole, string> = {
   admin: "Admin",
+  super_admin: "Super Admin",
   doctor: "Doctor",
   patient: "Patient",
 };

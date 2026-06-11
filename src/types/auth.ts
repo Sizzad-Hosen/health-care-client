@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "doctor" | "patient";
+export type UserRole = "admin" | "super_admin" | "doctor" | "patient";
 
 export type AuthUser = {
   id: string;
@@ -30,5 +30,12 @@ export type RegisterRequest = {
   password: string;
   contactNumber: string;
   address: string;
-  role: "patient";
+  role: "patient" | "doctor";
+  registrationNumber?: string;
+  experience?: number | string;
+  gender?: "MALE" | "FEMALE";
+  appointmentFee?: number | string;
+  qualification?: string;
+  currentWorkingPlace?: string;
+  designation?: string;
 };

@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { roleDashboardPath } from "@/lib/auth";
 import { LoginFormValues, loginSchema } from "@/lib/validations/auth.schema";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
@@ -24,6 +25,23 @@ import { setCredentials } from "@/redux/features/auth/authSlice";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { useToast } from "@/components/ui/toast";
+
+type ApiErrorPayload = {
+  data?: {
+    message?: string;
+  };
+  error?: string;
+};
+
+function getLoginErrorMessage(error: unknown) {
+  const apiError = error as ApiErrorPayload;
+
+  return (
+    apiError.data?.message ??
+    apiError.error ??
+    "Invalid email or password."
+  );
+}
 
 export function LoginForm() {
   const router = useRouter();
@@ -51,11 +69,13 @@ export function LoginForm() {
         variant: "success",
       });
       router.replace(roleDashboardPath[result.user.role]);
-    } catch {
-      setError("Invalid email or password.");
+    } catch (error) {
+      const message = getLoginErrorMessage(error);
+
+      setError(message);
       toast({
         title: "Sign in failed",
-        description: "Please verify your email and password.",
+        description: message,
         variant: "error",
       });
     }
@@ -95,11 +115,7 @@ export function LoginForm() {
               </Link>
             </div>
             <FormControl>
-              <Input
-                type="password"
-                placeholder="password123"
-                {...form.register("password")}
-              />
+              <PasswordInput placeholder="password123" {...form.register("password")} />
             </FormControl>
             <FormMessage>{form.formState.errors.password?.message}</FormMessage>
           </FormItem>
