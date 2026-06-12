@@ -1,7 +1,8 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Edit3, Loader2, RefreshCw, Search, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Edit3, RefreshCw, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,12 +14,7 @@ import {
 } from "@/redux/features/adminDashboard/adminDashboardApi";
 import { AdminPatient } from "@/types/admin-dashboard";
 import { confirmAction, totalPages } from "./utils";
-
-type PatientForm = {
-  name: string;
-  contactNumber: string;
-  address: string;
-};
+import { PatientEditForm, PatientEditModal, patientToForm } from "./AdminEntityModals";
 
 type ApiErrorPayload = { data?: { message?: string }; error?: string };
 
@@ -27,20 +23,13 @@ function getErrorMessage(error: unknown) {
   return apiError.data?.message ?? apiError.error ?? "Action failed.";
 }
 
-function toForm(patient: AdminPatient): PatientForm {
-  return {
-    name: patient.name ?? "",
-    contactNumber: patient.contactNumber ?? "",
-    address: patient.address ?? "",
-  };
-}
-
 export function PatientsManagement() {
+  const router = useRouter();
   const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [editing, setEditing] = useState<AdminPatient | null>(null);
-  const [form, setForm] = useState<PatientForm | null>(null);
+  const [form, setForm] = useState<PatientEditForm | null>(null);
   const { data, isFetching, isError, refetch } = useGetPatientsQuery({
     page,
     limit: 10,
@@ -52,7 +41,7 @@ export function PatientsManagement() {
   const pages = totalPages(data?.meta?.total, data?.meta?.limit ?? 10);
 
   const updateField =
-    (field: keyof PatientForm) =>
+    (field: keyof PatientEditForm) =>
     (event: ChangeEvent<HTMLInputElement>) => {
       setForm((current) => (current ? { ...current, [field]: event.target.value } : current));
     };
@@ -72,11 +61,20 @@ export function PatientsManagement() {
         },
       }).unwrap();
       toast({ title: "Patient updated", variant: "success" });
-      setEditing(null);
-      setForm(null);
+      closeEdit();
     } catch (error) {
       toast({ title: "Update failed", description: getErrorMessage(error), variant: "error" });
     }
+  };
+
+  const openEdit = (patient: AdminPatient) => {
+    setEditing(patient);
+    setForm(patientToForm(patient));
+  };
+
+  const closeEdit = () => {
+    setEditing(null);
+    setForm(null);
   };
 
   const softDelete = async (patient: AdminPatient) => {
@@ -114,22 +112,13 @@ export function PatientsManagement() {
       </Card>
 
       {editing && form ? (
-        <Card>
-          <CardContent className="p-5">
-            <form className="grid gap-4 md:grid-cols-3" onSubmit={submitEdit}>
-              <Input placeholder="Name" value={form.name} onChange={updateField("name")} />
-              <Input placeholder="Contact number" value={form.contactNumber} onChange={updateField("contactNumber")} />
-              <Input placeholder="Address" value={form.address} onChange={updateField("address")} />
-              <div className="flex gap-2 md:col-span-3">
-                <Button type="submit" disabled={isUpdating}>
-                  {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Edit3 className="h-4 w-4" />}
-                  Save
-                </Button>
-                <Button type="button" variant="ghost" onClick={() => setEditing(null)}>Cancel</Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+        <PatientEditModal
+          form={form}
+          isLoading={isUpdating}
+          onChange={updateField}
+          onClose={closeEdit}
+          onSubmit={submitEdit}
+        />
       ) : null}
 
       <Card>
@@ -153,18 +142,28 @@ export function PatientsManagement() {
                 ) : patients.length === 0 ? (
                   <tr><td className="p-6 text-slate-500" colSpan={5}>No patients found.</td></tr>
                 ) : patients.map((patient) => (
-                  <tr key={patient.id} className="border-b">
+                  <tr
+                    key={patient.id}
+                    className="cursor-pointer border-b transition-colors hover:bg-slate-50"
+                    tabIndex={0}
+                    onClick={() => router.push(`/dashboard/admin/patients/${patient.id}`)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" && patient.id) {
+                        router.push(`/dashboard/admin/patients/${patient.id}`);
+                      }
+                    }}
+                  >
                     <td className="p-4 font-medium text-slate-950">{patient.name}<p className="text-xs text-slate-500">{patient.email}</p></td>
                     <td className="p-4">{patient.contactNumber ?? "-"}</td>
                     <td className="p-4">{patient.address ?? "-"}</td>
                     <td className="p-4">{patient.isDeleted ? "Deleted" : "Active"}</td>
                     <td className="p-4">
                       <div className="flex justify-end gap-2">
-                        <Button type="button" size="sm" variant="outline" onClick={() => { setEditing(patient); setForm(toForm(patient)); }}>
+                        <Button type="button" size="sm" variant="outline" onClick={(event) => { event.stopPropagation(); openEdit(patient); }}>
                           <Edit3 className="h-4 w-4" />
                           Edit
                         </Button>
-                        <Button type="button" size="sm" variant="destructive" disabled={isDeleting} onClick={() => softDelete(patient)}>
+                        <Button type="button" size="sm" variant="destructive" disabled={isDeleting} onClick={(event) => { event.stopPropagation(); softDelete(patient); }}>
                           <Trash2 className="h-4 w-4" />
                           Soft delete
                         </Button>

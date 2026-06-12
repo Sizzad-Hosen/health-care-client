@@ -8,7 +8,7 @@ import {
 } from "@/types/appointment";
 import { ApiListResponse, ApiResponse } from "@/types/api";
 
-const backendProxyBase = "/api/backend/api/v1";
+const backendProxyBase =process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
 
 function toSearchParams(filters: DoctorScheduleFilters) {
   const params = new URLSearchParams();

@@ -1,7 +1,8 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Edit3, Loader2, RefreshCw, Search, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Edit3, RefreshCw, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,16 +14,7 @@ import {
 } from "@/redux/features/adminDashboard/adminDashboardApi";
 import { AdminDoctor } from "@/types/admin-dashboard";
 import { confirmAction, totalPages } from "./utils";
-
-type DoctorForm = {
-  name: string;
-  contactNumber: string;
-  qualification: string;
-  designation: string;
-  currentWorkingPlace: string;
-  experience: string;
-  appointmentFee: string;
-};
+import { DoctorEditForm, DoctorEditModal, doctorToForm } from "./AdminEntityModals";
 
 type ApiErrorPayload = { data?: { message?: string }; error?: string };
 
@@ -31,25 +23,14 @@ function getErrorMessage(error: unknown) {
   return apiError.data?.message ?? apiError.error ?? "Action failed.";
 }
 
-function toForm(doctor: AdminDoctor): DoctorForm {
-  return {
-    name: doctor.name ?? "",
-    contactNumber: doctor.contactNumber ?? "",
-    qualification: doctor.qualification ?? "",
-    designation: doctor.designation ?? "",
-    currentWorkingPlace: doctor.currentWorkingPlace ?? "",
-    experience: doctor.experience?.toString() ?? "",
-    appointmentFee: doctor.appointmentFee?.toString() ?? "",
-  };
-}
-
 export function DoctorsManagement() {
+  const router = useRouter();
   const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [gender, setGender] = useState("");
   const [editing, setEditing] = useState<AdminDoctor | null>(null);
-  const [form, setForm] = useState<DoctorForm | null>(null);
+  const [form, setForm] = useState<DoctorEditForm | null>(null);
   const { data, isFetching, isError, refetch } = useGetDoctorsQuery({
     page,
     limit: 10,
@@ -62,7 +43,7 @@ export function DoctorsManagement() {
   const pages = totalPages(data?.meta?.total, data?.meta?.limit ?? 10);
 
   const updateField =
-    (field: keyof DoctorForm) =>
+    (field: keyof DoctorEditForm) =>
     (event: ChangeEvent<HTMLInputElement>) => {
       setForm((current) => (current ? { ...current, [field]: event.target.value } : current));
     };
@@ -89,8 +70,7 @@ export function DoctorsManagement() {
         },
       }).unwrap();
       toast({ title: "Doctor updated", variant: "success" });
-      setEditing(null);
-      setForm(null);
+      closeEdit();
     } catch (error) {
       toast({
         title: "Update failed",
@@ -98,6 +78,16 @@ export function DoctorsManagement() {
         variant: "error",
       });
     }
+  };
+
+  const openEdit = (doctor: AdminDoctor) => {
+    setEditing(doctor);
+    setForm(doctorToForm(doctor));
+  };
+
+  const closeEdit = () => {
+    setEditing(null);
+    setForm(null);
   };
 
   const softDelete = async (doctor: AdminDoctor) => {
@@ -153,29 +143,13 @@ export function DoctorsManagement() {
       </Card>
 
       {editing && form ? (
-        <Card>
-          <CardContent className="p-5">
-            <form className="grid gap-4 md:grid-cols-2" onSubmit={submitEdit}>
-              {Object.keys(form).map((key) => (
-                <Input
-                  key={key}
-                  placeholder={key}
-                  value={form[key as keyof DoctorForm]}
-                  onChange={updateField(key as keyof DoctorForm)}
-                />
-              ))}
-              <div className="flex gap-2 md:col-span-2">
-                <Button type="submit" disabled={isUpdating}>
-                  {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Edit3 className="h-4 w-4" />}
-                  Save
-                </Button>
-                <Button type="button" variant="ghost" onClick={() => setEditing(null)}>
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+        <DoctorEditModal
+          form={form}
+          isLoading={isUpdating}
+          onChange={updateField}
+          onClose={closeEdit}
+          onSubmit={submitEdit}
+        />
       ) : null}
 
       <Card>
@@ -200,7 +174,17 @@ export function DoctorsManagement() {
                 ) : doctors.length === 0 ? (
                   <tr><td className="p-6 text-slate-500" colSpan={6}>No doctors found.</td></tr>
                 ) : doctors.map((doctor) => (
-                  <tr key={doctor.id} className="border-b">
+                  <tr
+                    key={doctor.id}
+                    className="cursor-pointer border-b transition-colors hover:bg-slate-50"
+                    tabIndex={0}
+                    onClick={() => router.push(`/dashboard/admin/doctors/${doctor.id}`)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        router.push(`/dashboard/admin/doctors/${doctor.id}`);
+                      }
+                    }}
+                  >
                     <td className="p-4 font-medium text-slate-950">{doctor.name}<p className="text-xs text-slate-500">{doctor.email}</p></td>
                     <td className="p-4">{doctor.contactNumber ?? "-"}</td>
                     <td className="p-4">{doctor.designation ?? "-"}</td>
@@ -208,11 +192,11 @@ export function DoctorsManagement() {
                     <td className="p-4">{doctor.isDeleted ? "Deleted" : "Active"}</td>
                     <td className="p-4">
                       <div className="flex justify-end gap-2">
-                        <Button type="button" size="sm" variant="outline" onClick={() => { setEditing(doctor); setForm(toForm(doctor)); }}>
+                        <Button type="button" size="sm" variant="outline" onClick={(event) => { event.stopPropagation(); openEdit(doctor); }}>
                           <Edit3 className="h-4 w-4" />
                           Edit
                         </Button>
-                        <Button type="button" size="sm" variant="destructive" disabled={isDeleting} onClick={() => softDelete(doctor)}>
+                        <Button type="button" size="sm" variant="destructive" disabled={isDeleting} onClick={(event) => { event.stopPropagation(); softDelete(doctor); }}>
                           <Trash2 className="h-4 w-4" />
                           Soft delete
                         </Button>

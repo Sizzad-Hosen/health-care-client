@@ -22,7 +22,8 @@ type BackendListPayload<T> = {
   meta?: ApiMeta;
 };
 
-const apiV1 = "/api/backend/api/v1";
+
+const apiV1 = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
 
 function toSearchParams(query: AdminQuery = {}) {
   const params = new URLSearchParams();
@@ -94,13 +95,21 @@ export const adminDashboardApi = createApi({
         normalizeList(response),
       providesTags: ["Doctors"],
     }),
+    getDoctorById: builder.query<ApiResponse<AdminDoctor>, string>({
+      query: (id) => `${apiV1}/doctor/${id}`,
+      providesTags: (_result, _error, id) => [{ type: "Doctors", id }],
+    }),
     updateDoctor: builder.mutation<ApiResponse<AdminDoctor>, UpdateDoctorRequest>({
       query: ({ id, body }) => ({
         url: `${apiV1}/doctor/${id}`,
         method: "PATCH",
         body,
       }),
-      invalidatesTags: ["Doctors", "AdminMeta"],
+      invalidatesTags: (_result, _error, { id }) => [
+        "Doctors",
+        "AdminMeta",
+        { type: "Doctors", id },
+      ],
     }),
     softDeleteDoctor: builder.mutation<ApiResponse<unknown>, string>({
       query: (id) => ({
@@ -125,13 +134,21 @@ export const adminDashboardApi = createApi({
         normalizeList(response),
       providesTags: ["Patients"],
     }),
+    getPatientById: builder.query<ApiResponse<AdminPatient>, string>({
+      query: (id) => `${apiV1}/patient/${id}`,
+      providesTags: (_result, _error, id) => [{ type: "Patients", id }],
+    }),
     updatePatient: builder.mutation<ApiResponse<AdminPatient>, UpdatePatientRequest>({
       query: ({ id, body }) => ({
         url: `${apiV1}/patient/${id}`,
         method: "PATCH",
         body,
       }),
-      invalidatesTags: ["Patients", "AdminMeta"],
+      invalidatesTags: (_result, _error, { id }) => [
+        "Patients",
+        "AdminMeta",
+        { type: "Patients", id },
+      ],
     }),
     softDeletePatient: builder.mutation<ApiResponse<unknown>, string>({
       query: (id) => ({
@@ -223,7 +240,9 @@ export const {
   useGetAdminMetaQuery,
   useGetAdminsQuery,
   useGetAppointmentsQuery,
+  useGetDoctorByIdQuery,
   useGetDoctorsQuery,
+  useGetPatientByIdQuery,
   useGetPatientsQuery,
   useGetPrescriptionsQuery,
   useGetSchedulesQuery,

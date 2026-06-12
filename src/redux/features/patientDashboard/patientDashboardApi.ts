@@ -26,7 +26,7 @@ type BackendDetailPayload<T> = {
   success?: boolean;
 };
 
-const apiV1 = "/api/backend/api/v1";
+const apiV1 = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
 
 function toSearchParams(query: PatientQuery = {}) {
   const params = new URLSearchParams();
