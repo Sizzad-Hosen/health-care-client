@@ -15,6 +15,14 @@ const mobilePatientLinks = [
   { href: "/dashboard/patient/prescriptions", label: "Prescriptions" },
 ];
 
+const mobileDoctorLinks = [
+  { href: "/", label: "Home" },
+  { href: "/dashboard/doctor", label: "Overview" },
+  { href: "/dashboard/doctor/appointments", label: "Appointments" },
+  { href: "/dashboard/doctor/schedules", label: "Schedules" },
+  { href: "/dashboard/doctor/profile", label: "Profile" },
+];
+
 export function DashboardLayout({
   children,
   role,
@@ -30,9 +38,9 @@ export function DashboardLayout({
         <Sidebar role={role} />
         <div className="min-w-0 flex-1">
           <Topbar />
-          {role === "patient" ? (
+          {role === "patient" || role === "doctor" ? (
             <nav className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
-              {mobilePatientLinks.map((item) => (
+              {(role === "patient" ? mobilePatientLinks : mobileDoctorLinks).map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
