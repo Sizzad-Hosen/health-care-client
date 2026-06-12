@@ -9,10 +9,10 @@ import { cn } from "@/lib/utils";
 import { UserRole } from "@/types/auth";
 
 const mobilePatientLinks = [
+  { href: "/", label: "Home" },
   { href: "/dashboard/patient", label: "Overview" },
   { href: "/dashboard/patient/appointments", label: "Appointments" },
   { href: "/dashboard/patient/prescriptions", label: "Prescriptions" },
-  { href: "/dashboard/patient/profile", label: "Profile" },
 ];
 
 export function DashboardLayout({

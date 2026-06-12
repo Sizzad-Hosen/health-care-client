@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, CalendarDays, CheckSquare, FileText, KeyRound, LayoutDashboard, Shield, Stethoscope, UserCog, UserRound } from "lucide-react";
+import { Activity, CalendarDays, CheckSquare, FileText, Home, KeyRound, LayoutDashboard, Shield, Stethoscope, UserCog, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserRole } from "@/types/auth";
 
@@ -43,11 +43,6 @@ const patientItems = [
     label: "Prescriptions",
     icon: FileText,
   },
-  {
-    href: "/dashboard/patient/profile",
-    label: "Patient profile",
-    icon: UserCog,
-  },
 ];
 
 export function Sidebar({ role }: { role: UserRole }) {
@@ -66,6 +61,13 @@ export function Sidebar({ role }: { role: UserRole }) {
       </div>
 
       <nav className="space-y-1">
+        <Link
+          href="/"
+          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+        >
+          <Home className="h-4 w-4" />
+          Public home
+        </Link>
         <Link
           href="/dashboard"
           className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"

@@ -2,6 +2,7 @@ import { Star } from "lucide-react";
 import { MotionSection } from "@/components/public/Motion";
 import { PatientReviews } from "@/components/public/PatientReviews";
 import { PublicShell } from "@/components/public/PublicShell";
+import { PublicReviewCreator } from "@/components/public/PublicReviewCreator";
 import { reviewHighlights } from "@/lib/public-data";
 import { buildSeo } from "@/lib/seo";
 
@@ -22,6 +23,9 @@ export default function ReviewsPage() {
           </h1>
           <div className="mt-8">
             <PatientReviews />
+          </div>
+          <div className="mt-8">
+            <PublicReviewCreator />
           </div>
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             {reviewHighlights.map((review) => (
