@@ -25,6 +25,7 @@ const mobileDoctorLinks = [
 const mobileAdminLinks = [
   { href: "/", label: "Home" },
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/dashboard/admin/users", label: "User Management" },
   { href: "/dashboard/admin/doctors", label: "Doctors" },
   { href: "/dashboard/admin/patients", label: "Patients" },
   { href: "/dashboard/admin/appointments", label: "Appointments" },

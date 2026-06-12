@@ -54,6 +54,7 @@ const doctorItems = [
 ];
 
 const adminItems = [
+  { href: "/dashboard/admin/users", label: "User Management", icon: UserCog },
   { href: "/dashboard/admin/doctors", label: "Doctors", icon: Stethoscope },
   { href: "/dashboard/admin/patients", label: "Patients", icon: UsersRound },
   { href: "/dashboard/admin/appointments", label: "Appointments", icon: CalendarDays },

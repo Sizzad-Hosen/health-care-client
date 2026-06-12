@@ -1,92 +1,27 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Edit3, RefreshCw, Search, Trash2 } from "lucide-react";
+import { Eye, RefreshCw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/toast";
 import {
   useGetPatientsQuery,
-  useSoftDeletePatientMutation,
-  useUpdatePatientMutation,
 } from "@/redux/features/adminDashboard/adminDashboardApi";
-import { AdminPatient } from "@/types/admin-dashboard";
-import { confirmAction, totalPages } from "./utils";
-import { PatientEditForm, PatientEditModal, patientToForm } from "./AdminEntityModals";
-
-type ApiErrorPayload = { data?: { message?: string }; error?: string };
-
-function getErrorMessage(error: unknown) {
-  const apiError = error as ApiErrorPayload;
-  return apiError.data?.message ?? apiError.error ?? "Action failed.";
-}
+import { totalPages } from "./utils";
 
 export function PatientsManagement() {
   const router = useRouter();
-  const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [editing, setEditing] = useState<AdminPatient | null>(null);
-  const [form, setForm] = useState<PatientEditForm | null>(null);
   const { data, isFetching, isError, refetch } = useGetPatientsQuery({
     page,
     limit: 10,
     searchTerm: searchTerm || undefined,
   });
-  const [updatePatient, { isLoading: isUpdating }] = useUpdatePatientMutation();
-  const [softDeletePatient, { isLoading: isDeleting }] = useSoftDeletePatientMutation();
   const patients = data?.data ?? [];
   const pages = totalPages(data?.meta?.total, data?.meta?.limit ?? 10);
-
-  const updateField =
-    (field: keyof PatientEditForm) =>
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setForm((current) => (current ? { ...current, [field]: event.target.value } : current));
-    };
-
-  const submitEdit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!editing || !form) return;
-
-    try {
-      await updatePatient({
-        id: editing.id ?? "",
-        body: {
-          name: form.name,
-          contactNumber: form.contactNumber,
-          contactNo: form.contactNumber,
-          address: form.address,
-        },
-      }).unwrap();
-      toast({ title: "Patient updated", variant: "success" });
-      closeEdit();
-    } catch (error) {
-      toast({ title: "Update failed", description: getErrorMessage(error), variant: "error" });
-    }
-  };
-
-  const openEdit = (patient: AdminPatient) => {
-    setEditing(patient);
-    setForm(patientToForm(patient));
-  };
-
-  const closeEdit = () => {
-    setEditing(null);
-    setForm(null);
-  };
-
-  const softDelete = async (patient: AdminPatient) => {
-    if (!patient.id || !confirmAction(`Soft delete ${patient.name}?`)) return;
-
-    try {
-      await softDeletePatient(patient.id).unwrap();
-      toast({ title: "Patient soft deleted", variant: "success" });
-    } catch (error) {
-      toast({ title: "Delete failed", description: getErrorMessage(error), variant: "error" });
-    }
-  };
 
   return (
     <div className="space-y-5">
@@ -110,16 +45,6 @@ export function PatientsManagement() {
           </Button>
         </CardContent>
       </Card>
-
-      {editing && form ? (
-        <PatientEditModal
-          form={form}
-          isLoading={isUpdating}
-          onChange={updateField}
-          onClose={closeEdit}
-          onSubmit={submitEdit}
-        />
-      ) : null}
 
       <Card>
         <CardContent className="p-0">
@@ -159,13 +84,9 @@ export function PatientsManagement() {
                     <td className="p-4">{patient.isDeleted ? "Deleted" : "Active"}</td>
                     <td className="p-4">
                       <div className="flex justify-end gap-2">
-                        <Button type="button" size="sm" variant="outline" onClick={(event) => { event.stopPropagation(); openEdit(patient); }}>
-                          <Edit3 className="h-4 w-4" />
-                          Edit
-                        </Button>
-                        <Button type="button" size="sm" variant="destructive" disabled={isDeleting} onClick={(event) => { event.stopPropagation(); softDelete(patient); }}>
-                          <Trash2 className="h-4 w-4" />
-                          Soft delete
+                        <Button type="button" size="sm" variant="outline" onClick={(event) => { event.stopPropagation(); router.push(`/dashboard/admin/patients/${patient.id}`); }}>
+                          <Eye className="h-4 w-4" />
+                          View details
                         </Button>
                       </div>
                     </td>

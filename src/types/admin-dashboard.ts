@@ -99,11 +99,19 @@ export type CreateSpecialtyRequest = {
   file?: File | null;
 };
 
+export type UpdateSpecialtyRequest = CreateSpecialtyRequest & {
+  id: string;
+};
+
 export type CreateScheduleRequest = {
   startDate: string;
   endDate: string;
   startTime: string;
   endTime: string;
+};
+
+export type UpdateScheduleRequest = CreateScheduleRequest & {
+  id: string;
 };
 
 export type AdminSchedule = Schedule;

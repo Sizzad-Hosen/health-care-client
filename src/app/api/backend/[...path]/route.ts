@@ -28,24 +28,33 @@ type RouteContext = {
 
 async function proxy(request: NextRequest, context: RouteContext) {
   const params = await context.params;
-  const path = `/${params.path?.join("/") ?? ""}`;
+  const routePath = `/${params.path?.join("/") ?? ""}`;
+  const path = `${routePath}${request.nextUrl.search}`;
 
-  if (!ALLOWED_PREFIXES.some((prefix) => path.startsWith(prefix))) {
+  if (!ALLOWED_PREFIXES.some((prefix) => routePath.startsWith(prefix))) {
     return NextResponse.json({ message: "Route is not allowed" }, { status: 403 });
   }
 
+  const contentType = request.headers.get("content-type") ?? "";
+  const isMultipart = contentType.includes("multipart/form-data");
   const body =
     request.method === "GET" || request.method === "HEAD"
       ? undefined
-      : await request.text();
+      : isMultipart
+        ? await request.formData()
+        : await request.text();
 
   try {
+    const headers: HeadersInit = {};
+
+    if (!isMultipart) {
+      headers["Content-Type"] = contentType || "application/json";
+    }
+
     const response = await authenticatedBackendRequest(path, {
       method: request.method,
       body,
-      headers: {
-        "Content-Type": request.headers.get("content-type") ?? "application/json",
-      },
+      headers,
     });
 
     return NextResponse.json(response);

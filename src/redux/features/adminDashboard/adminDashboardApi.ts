@@ -15,6 +15,8 @@ import {
   PaginatedResult,
   UpdateDoctorRequest,
   UpdatePatientRequest,
+  UpdateScheduleRequest,
+  UpdateSpecialtyRequest,
 } from "@/types/admin-dashboard";
 
 type BackendListPayload<T> = {
@@ -23,7 +25,7 @@ type BackendListPayload<T> = {
 };
 
 
-const apiV1 = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
+const apiV1 = "/api/backend/api/v1";
 
 function toSearchParams(query: AdminQuery = {}) {
   const params = new URLSearchParams();
@@ -196,6 +198,14 @@ export const adminDashboardApi = createApi({
       }),
       invalidatesTags: ["Specialties", "AdminMeta"],
     }),
+    updateSpecialty: builder.mutation<ApiResponse<AdminSpecialty>, UpdateSpecialtyRequest>({
+      query: ({ id, ...body }) => ({
+        url: `${apiV1}/specalties/${id}`,
+        method: "PATCH",
+        body: specialtyFormData(body),
+      }),
+      invalidatesTags: ["Specialties", "AdminMeta"],
+    }),
     deleteSpecialty: builder.mutation<ApiResponse<unknown>, string>({
       query: (id) => ({
         url: `${apiV1}/specalties/${id}`,
@@ -216,6 +226,14 @@ export const adminDashboardApi = createApi({
       query: (body) => ({
         url: `${apiV1}/schedules`,
         method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Schedules", "AdminMeta"],
+    }),
+    updateSchedule: builder.mutation<ApiResponse<AdminSchedule>, UpdateScheduleRequest>({
+      query: ({ id, ...body }) => ({
+        url: `${apiV1}/schedules/${id}`,
+        method: "PATCH",
         body,
       }),
       invalidatesTags: ["Schedules", "AdminMeta"],
@@ -251,4 +269,6 @@ export const {
   useSoftDeletePatientMutation,
   useUpdateDoctorMutation,
   useUpdatePatientMutation,
+  useUpdateScheduleMutation,
+  useUpdateSpecialtyMutation,
 } = adminDashboardApi;

@@ -12,7 +12,7 @@ export default function AdminDoctorsPage() {
         <div className="mb-6">
           <Badge variant="secondary">Doctors</Badge>
           <h2 className="mt-3 text-2xl font-semibold text-slate-950">Doctors management</h2>
-          <p className="mt-1 text-sm text-slate-500">Search, edit, paginate, and soft delete doctor profiles.</p>
+          <p className="mt-1 text-sm text-slate-500">Search, paginate, and view doctor profile details.</p>
         </div>
         <DoctorsManagement />
       </DashboardLayout>
