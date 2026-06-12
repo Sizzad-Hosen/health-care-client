@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarDays, Clock, MapPin, Star, Stethoscope } from "lucide-react";
+import { Clock, MapPin, Star, Stethoscope } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useGetDoctorByIdQuery, useGetReviewsQuery } from "@/redux/features/public/publicApi";
+import { DoctorScheduleBooking } from "./DoctorScheduleBooking";
 
 function initials(name?: string) {
   return (name ?? "DR")
@@ -142,28 +143,7 @@ export function DoctorDetails({ id }: { id: string }) {
       </section>
 
       <aside className="space-y-4">
-        <Card>
-          <CardContent className="p-6">
-            <CalendarDays className="h-6 w-6 text-emerald-600" />
-            <h2 className="mt-4 text-xl font-semibold text-slate-950">
-              Available schedule
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              Sign in as a patient to view live doctor schedules and book an
-              appointment from the dashboard.
-            </p>
-            <div className="mt-5 grid gap-2 text-sm text-slate-600">
-              <div className="rounded-md bg-slate-50 p-3">Today: 09:00 - 17:00</div>
-              <div className="rounded-md bg-slate-50 p-3">Slot duration: 30 minutes</div>
-            </div>
-            <Button asChild className="mt-5 w-full">
-              <Link href="/login">Book appointment</Link>
-            </Button>
-            <Button asChild variant="outline" className="mt-2 w-full">
-              <Link href="/register">Create patient account</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <DoctorScheduleBooking doctorId={doctor.id} doctorName={doctor.name} />
       </aside>
     </div>
   );
