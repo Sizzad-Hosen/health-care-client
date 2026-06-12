@@ -1,7 +1,7 @@
 "use client";
 
 import { RoleGuard } from "@/components/auth/RoleGuard";
-import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { AdminOverview } from "@/components/dashboard/admin/AdminOverview";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
 
@@ -21,7 +21,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <DashboardContent />
+        <AdminOverview />
       </DashboardLayout>
     </RoleGuard>
   );

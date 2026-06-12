@@ -22,6 +22,17 @@ const mobileDoctorLinks = [
   { href: "/dashboard/doctor/schedules", label: "Schedules" },
 ];
 
+const mobileAdminLinks = [
+  { href: "/", label: "Home" },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/dashboard/admin/doctors", label: "Doctors" },
+  { href: "/dashboard/admin/patients", label: "Patients" },
+  { href: "/dashboard/admin/appointments", label: "Appointments" },
+  { href: "/dashboard/admin/specialties", label: "Specialties" },
+  { href: "/dashboard/admin/schedules", label: "Schedules" },
+  { href: "/dashboard/admin/prescriptions", label: "Prescriptions" },
+];
+
 export function DashboardLayout({
   children,
   role,
@@ -37,9 +48,14 @@ export function DashboardLayout({
         <Sidebar role={role} />
         <div className="min-w-0 flex-1">
           <Topbar />
-          {role === "patient" || role === "doctor" ? (
+          {role === "patient" || role === "doctor" || role === "admin" || role === "super_admin" ? (
             <nav className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
-              {(role === "patient" ? mobilePatientLinks : mobileDoctorLinks).map((item) => (
+              {(role === "patient"
+                ? mobilePatientLinks
+                : role === "doctor"
+                  ? mobileDoctorLinks
+                  : mobileAdminLinks
+              ).map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

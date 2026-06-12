@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, CalendarDays, CheckSquare, FileText, Home, KeyRound, LayoutDashboard, Shield, Stethoscope, UserCog, UserRound } from "lucide-react";
+import { Activity, CalendarDays, CheckSquare, FileText, HeartPulse, Home, KeyRound, LayoutDashboard, Shield, Stethoscope, UserCog, UserRound, UsersRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserRole } from "@/types/auth";
 
@@ -51,6 +51,15 @@ const doctorItems = [
     label: "Schedules",
     icon: CheckSquare,
   },
+];
+
+const adminItems = [
+  { href: "/dashboard/admin/doctors", label: "Doctors", icon: Stethoscope },
+  { href: "/dashboard/admin/patients", label: "Patients", icon: UsersRound },
+  { href: "/dashboard/admin/appointments", label: "Appointments", icon: CalendarDays },
+  { href: "/dashboard/admin/specialties", label: "Specialties", icon: HeartPulse },
+  { href: "/dashboard/admin/schedules", label: "Schedules", icon: CheckSquare },
+  { href: "/dashboard/admin/prescriptions", label: "Prescriptions", icon: FileText },
 ];
 
 export function Sidebar({ role }: { role: UserRole }) {
@@ -122,8 +131,8 @@ export function Sidebar({ role }: { role: UserRole }) {
         <div className="py-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
           Role Access
         </div>
-        {role === "patient" || role === "doctor"
-          ? (role === "patient" ? patientItems : doctorItems).map((item) => {
+        {role === "patient" || role === "doctor" || role === "admin" || role === "super_admin"
+          ? (role === "patient" ? patientItems : role === "doctor" ? doctorItems : adminItems).map((item) => {
               const Icon = item.icon;
               return (
                 <Link

@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { adminDashboardApi } from "@/redux/features/adminDashboard/adminDashboardApi";
 import authReducer from "@/redux/features/auth/authSlice";
 import { appointmentApi } from "@/redux/features/appointment/appointmentApi";
 import { authApi } from "@/redux/features/auth/authApi";
@@ -9,6 +10,7 @@ import { publicApi } from "@/redux/features/public/publicApi";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    [adminDashboardApi.reducerPath]: adminDashboardApi.reducer,
     [appointmentApi.reducerPath]: appointmentApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [doctorDashboardApi.reducerPath]: doctorDashboardApi.reducer,
@@ -17,6 +19,7 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
+      adminDashboardApi.middleware,
       appointmentApi.middleware,
       authApi.middleware,
       doctorDashboardApi.middleware,
