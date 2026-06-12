@@ -29,11 +29,6 @@ const items = [
 
 const patientItems = [
   {
-    href: "/dashboard/patient",
-    label: "Overview",
-    icon: LayoutDashboard,
-  },
-  {
     href: "/dashboard/patient/appointments",
     label: "Appointments",
     icon: CalendarDays,
@@ -47,11 +42,6 @@ const patientItems = [
 
 const doctorItems = [
   {
-    href: "/dashboard/doctor",
-    label: "Overview",
-    icon: LayoutDashboard,
-  },
-  {
     href: "/dashboard/doctor/appointments",
     label: "Appointments",
     icon: CalendarDays,
@@ -60,11 +50,6 @@ const doctorItems = [
     href: "/dashboard/doctor/schedules",
     label: "Schedules",
     icon: CheckSquare,
-  },
-  {
-    href: "/dashboard/doctor/profile",
-    label: "Doctor profile",
-    icon: UserCog,
   },
 ];
 
@@ -91,15 +76,13 @@ export function Sidebar({ role }: { role: UserRole }) {
           <Home className="h-4 w-4" />
           Public home
         </Link>
-        {role !== "patient" ? (
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
-          </Link>
-        ) : null}
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+        >
+          <LayoutDashboard className="h-4 w-4" />
+          Dashboard
+        </Link>
         <Link
           href="/dashboard/tasks"
           className={cn(

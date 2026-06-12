@@ -10,17 +10,16 @@ import { UserRole } from "@/types/auth";
 
 const mobilePatientLinks = [
   { href: "/", label: "Home" },
-  { href: "/dashboard/patient", label: "Overview" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/dashboard/patient/appointments", label: "Appointments" },
   { href: "/dashboard/patient/prescriptions", label: "Prescriptions" },
 ];
 
 const mobileDoctorLinks = [
   { href: "/", label: "Home" },
-  { href: "/dashboard/doctor", label: "Overview" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/dashboard/doctor/appointments", label: "Appointments" },
   { href: "/dashboard/doctor/schedules", label: "Schedules" },
-  { href: "/dashboard/doctor/profile", label: "Profile" },
 ];
 
 export function DashboardLayout({
