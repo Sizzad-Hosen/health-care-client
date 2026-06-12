@@ -63,6 +63,11 @@ const adminItems = [
   { href: "/dashboard/admin/prescriptions", label: "Prescriptions", icon: FileText },
 ];
 
+const superAdminItems = [
+  ...adminItems,
+  { href: "/dashboard/admin/admins", label: "Admin Management", icon: Shield },
+];
+
 export function Sidebar({ role }: { role: UserRole }) {
   const pathname = usePathname();
 
@@ -133,7 +138,7 @@ export function Sidebar({ role }: { role: UserRole }) {
           Role Access
         </div>
         {role === "patient" || role === "doctor" || role === "admin" || role === "super_admin"
-          ? (role === "patient" ? patientItems : role === "doctor" ? doctorItems : adminItems).map((item) => {
+          ? (role === "patient" ? patientItems : role === "doctor" ? doctorItems : role === "super_admin" ? superAdminItems : adminItems).map((item) => {
               const Icon = item.icon;
               return (
                 <Link

@@ -7,6 +7,8 @@ import { Topbar } from "@/components/dashboard/Topbar";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { cn } from "@/lib/utils";
 import { UserRole } from "@/types/auth";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const mobilePatientLinks = [
   { href: "/", label: "Home" },
@@ -34,6 +36,11 @@ const mobileAdminLinks = [
   { href: "/dashboard/admin/prescriptions", label: "Prescriptions" },
 ];
 
+const mobileSuperAdminLinks = [
+  ...mobileAdminLinks,
+  { href: "/dashboard/admin/admins", label: "Admin Management" },
+];
+
 export function DashboardLayout({
   children,
   role,
@@ -42,20 +49,24 @@ export function DashboardLayout({
   role: UserRole;
 }) {
   const pathname = usePathname();
+  const actualRole = useSelector((state: RootState) => state.auth.user?.role);
+  const effectiveRole = actualRole ?? role;
 
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-slate-50 lg:flex">
-        <Sidebar role={role} />
+        <Sidebar role={effectiveRole} />
         <div className="min-w-0 flex-1">
           <Topbar />
-          {role === "patient" || role === "doctor" || role === "admin" || role === "super_admin" ? (
+          {effectiveRole === "patient" || effectiveRole === "doctor" || effectiveRole === "admin" || effectiveRole === "super_admin" ? (
             <nav className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
-              {(role === "patient"
+              {(effectiveRole === "patient"
                 ? mobilePatientLinks
-                : role === "doctor"
+                : effectiveRole === "doctor"
                   ? mobileDoctorLinks
-                  : mobileAdminLinks
+                  : effectiveRole === "super_admin"
+                    ? mobileSuperAdminLinks
+                    : mobileAdminLinks
               ).map((item) => (
                 <Link
                   key={item.href}

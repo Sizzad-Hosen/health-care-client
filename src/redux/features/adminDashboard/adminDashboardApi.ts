@@ -10,9 +10,11 @@ import {
   AdminSchedule,
   AdminSpecialty,
   AdminUser,
+  CreateAdminRequest,
   CreateScheduleRequest,
   CreateSpecialtyRequest,
   PaginatedResult,
+  UpdateAdminRequest,
   UpdateDoctorRequest,
   UpdatePatientRequest,
   UpdateScheduleRequest,
@@ -61,6 +63,27 @@ function specialtyFormData(body: CreateSpecialtyRequest) {
   return formData;
 }
 
+function adminFormData(body: CreateAdminRequest) {
+  const formData = new FormData();
+  formData.append(
+    "data",
+    JSON.stringify({
+      password: body.password,
+      admin: {
+        name: body.name,
+        email: body.email,
+        contactNumber: body.contactNumber,
+      },
+    }),
+  );
+
+  if (body.file) {
+    formData.append("file", body.file);
+  }
+
+  return formData;
+}
+
 export const adminDashboardApi = createApi({
   reducerPath: "adminDashboardApi",
   baseQuery: fetchBaseQuery({ baseUrl: "" }),
@@ -87,6 +110,44 @@ export const adminDashboardApi = createApi({
       transformResponse: (response: BackendListPayload<AdminUser>) =>
         normalizeList(response),
       providesTags: ["Admins"],
+    }),
+    getAdminById: builder.query<ApiResponse<AdminUser>, string>({
+      query: (id) => `${apiV1}/admin/${id}`,
+      providesTags: (_result, _error, id) => [{ type: "Admins", id }],
+    }),
+    createAdmin: builder.mutation<ApiResponse<AdminUser>, CreateAdminRequest>({
+      query: (body) => ({
+        url: `${apiV1}/user/create-admin`,
+        method: "POST",
+        body: adminFormData(body),
+      }),
+      invalidatesTags: ["Admins", "AdminMeta"],
+    }),
+    updateAdmin: builder.mutation<ApiResponse<AdminUser>, UpdateAdminRequest>({
+      query: ({ id, body }) => ({
+        url: `${apiV1}/admin/${id}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        "Admins",
+        "AdminMeta",
+        { type: "Admins", id },
+      ],
+    }),
+    softDeleteAdmin: builder.mutation<ApiResponse<unknown>, string>({
+      query: (id) => ({
+        url: `${apiV1}/admin/soft/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Admins", "AdminMeta"],
+    }),
+    deleteAdmin: builder.mutation<ApiResponse<unknown>, string>({
+      query: (id) => ({
+        url: `${apiV1}/admin/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Admins", "AdminMeta"],
     }),
     getDoctors: builder.query<PaginatedResult<AdminDoctor>, AdminQuery | void>({
       query: (query) => {
@@ -249,12 +310,15 @@ export const adminDashboardApi = createApi({
 });
 
 export const {
+  useCreateAdminMutation,
   useCreateSchedulesMutation,
   useCreateSpecialtyMutation,
+  useDeleteAdminMutation,
   useDeleteDoctorMutation,
   useDeletePatientMutation,
   useDeleteScheduleMutation,
   useDeleteSpecialtyMutation,
+  useGetAdminByIdQuery,
   useGetAdminMetaQuery,
   useGetAdminsQuery,
   useGetAppointmentsQuery,
@@ -265,8 +329,10 @@ export const {
   useGetPrescriptionsQuery,
   useGetSchedulesQuery,
   useGetSpecialtiesQuery,
+  useSoftDeleteAdminMutation,
   useSoftDeleteDoctorMutation,
   useSoftDeletePatientMutation,
+  useUpdateAdminMutation,
   useUpdateDoctorMutation,
   useUpdatePatientMutation,
   useUpdateScheduleMutation,

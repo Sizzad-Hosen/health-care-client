@@ -30,6 +30,8 @@ export type AdminUser = {
   contactNumber?: string;
   profilePhoto?: string;
   isDeleted?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type AdminDoctor = Doctor & {
@@ -91,6 +93,23 @@ export type UpdatePatientRequest = {
     contactNo: string;
     address: string;
     gender: "MALE" | "FEMALE";
+  }>;
+};
+
+export type CreateAdminRequest = {
+  name: string;
+  email: string;
+  password: string;
+  contactNumber: string;
+  file?: File | null;
+};
+
+export type UpdateAdminRequest = {
+  id: string;
+  body: Partial<{
+    name: string;
+    email: string;
+    contactNumber: string;
   }>;
 };
 
