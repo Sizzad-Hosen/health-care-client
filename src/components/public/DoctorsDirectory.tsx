@@ -22,9 +22,15 @@ const initialFilters: Filters = {
   specialties: "",
 };
 
-export function DoctorsDirectory() {
-  const [filters, setFilters] = useState<Filters>(initialFilters);
-  const [draft, setDraft] = useState<Filters>(initialFilters);
+export function DoctorsDirectory({ initialSearchParams }: { initialSearchParams?: Partial<Filters> }) {
+  const initial = {
+    ...initialFilters,
+    searchTerm: initialSearchParams?.searchTerm ?? "",
+    gender: initialSearchParams?.gender ?? "",
+    specialties: initialSearchParams?.specialties ?? "",
+  };
+  const [filters, setFilters] = useState<Filters>(initial);
+  const [draft, setDraft] = useState<Filters>(initial);
   const [page, setPage] = useState(1);
   const { data, isLoading, isError } = useGetDoctorsQuery({
     ...filters,

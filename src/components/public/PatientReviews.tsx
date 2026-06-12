@@ -36,7 +36,7 @@ export function PatientReviews() {
             <div key={index} className="h-48 animate-pulse rounded-lg bg-slate-100" />
           ))
         : reviews.map((review) => (
-            <Card key={review.id} className="h-full">
+            <Card key={review.id} className="h-full dark:border-slate-700 dark:bg-slate-900">
               <CardContent className="p-5">
                 <div className="mb-4 flex gap-1 text-amber-500">
                   {Array.from({ length: 5 }).map((_, index) => (
@@ -47,8 +47,8 @@ export function PatientReviews() {
                     />
                   ))}
                 </div>
-                <p className="text-sm leading-6 text-slate-600">"{review.comment}"</p>
-                <p className="mt-4 font-semibold text-slate-950">
+                <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">&ldquo;{review.comment}&rdquo;</p>
+                <p className="mt-4 font-semibold text-slate-950 dark:text-white">
                   {review.patient?.name ?? "Verified patient"}
                 </p>
               </CardContent>

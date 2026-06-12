@@ -18,7 +18,7 @@ export function SpecialtyGrid({ limit }: { limit?: number }) {
   const { data, isLoading } = useGetSpecialtiesQuery();
   const specialties = data?.data?.length
     ? data.data.slice(0, limit)
-    : fallbackSpecialties.slice(0, limit).map((title, index) => ({
+    : fallbackSpecialties.slice(0, limit).map((title) => ({
         id: title.toLowerCase(),
         title,
         icon: undefined,
@@ -35,7 +35,7 @@ export function SpecialtyGrid({ limit }: { limit?: number }) {
               key={specialty.id}
               href={`/doctors?specialties=${encodeURIComponent(specialty.title)}`}
             >
-              <Card className="h-full transition-all hover:-translate-y-0.5 hover:shadow-md">
+              <Card className="h-full transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
                 <CardContent className="flex items-center justify-between gap-4 p-5">
                   <div className="flex items-center gap-3">
                     <span className="flex h-11 w-11 items-center justify-center rounded-md bg-emerald-50 text-emerald-700">
@@ -46,8 +46,8 @@ export function SpecialtyGrid({ limit }: { limit?: number }) {
                       )}
                     </span>
                     <div>
-                      <p className="font-semibold text-slate-950">{specialty.title}</p>
-                      <p className="text-sm text-slate-500">Find available doctors</p>
+                      <p className="font-semibold text-slate-950 dark:text-white">{specialty.title}</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">Find available doctors</p>
                     </div>
                   </div>
                   <ArrowRight className="h-4 w-4 text-slate-400" />

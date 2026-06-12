@@ -16,8 +16,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CareFlow | Healthcare Dashboard",
-  description: "Role-based healthcare appointment dashboard",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  title: {
+    default: "CareFlow | Modern Healthcare Platform",
+    template: "%s | CareFlow",
+  },
+  description:
+    "Find doctors, book appointments, pay online, read reviews, and use AI-assisted healthcare guidance.",
 };
 
 export default function RootLayout({
@@ -30,7 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-white text-slate-950">
+      <body className="min-h-full bg-white text-slate-950 dark:bg-slate-950 dark:text-slate-50">
         <ReduxProvider>
           <ToastProvider>
             <AuthProvider>{children}</AuthProvider>

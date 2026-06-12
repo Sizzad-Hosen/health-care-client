@@ -86,6 +86,7 @@ export function ProfileForm() {
 
   useEffect(() => {
     if (profile) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm(profileToForm(profile));
     }
   }, [profile]);
