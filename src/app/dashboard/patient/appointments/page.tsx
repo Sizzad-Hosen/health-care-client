@@ -2,24 +2,23 @@
 
 import { RoleGuard } from "@/components/auth/RoleGuard";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { PatientOverview } from "@/components/dashboard/patient/PatientOverview";
+import { PatientAppointments } from "@/components/dashboard/patient/PatientAppointments";
 import { Badge } from "@/components/ui/badge";
 
-export default function PatientDashboardPage() {
+export default function PatientAppointmentsPage() {
   return (
     <RoleGuard allowedRole="patient">
       <DashboardLayout role="patient">
         <div className="mb-6">
-          <Badge variant="secondary">Patient workspace</Badge>
+          <Badge variant="secondary">Appointments</Badge>
           <h2 className="mt-3 text-2xl font-semibold text-slate-950">
-            Personal care overview
+            My appointments
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            View appointments, prescriptions, visits, and payment status.
+            Track doctor details, schedule time, status, payment, and review actions.
           </p>
         </div>
-
-        <PatientOverview />
+        <PatientAppointments />
       </DashboardLayout>
     </RoleGuard>
   );

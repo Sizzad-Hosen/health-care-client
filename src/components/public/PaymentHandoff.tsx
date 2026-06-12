@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/toast";
-import { useInitPaymentMutation } from "@/redux/features/appointment/appointmentApi";
+import { useInitPaymentMutation } from "@/redux/features/patientDashboard/patientDashboardApi";
 
 type PaymentHandoffProps = {
   appointmentId: string;
@@ -45,7 +45,7 @@ export function PaymentHandoff({ appointmentId }: PaymentHandoffProps) {
       }
 
       setPaymentUrl(nextUrl);
-      window.location.href = nextUrl;
+      window.location.assign(nextUrl);
     } catch (error) {
       toast({
         title: "Payment could not start",

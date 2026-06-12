@@ -59,6 +59,7 @@ export const appointmentApi = createApi({
         url: `/payments/init-payment/${appointmentId}`,
         method: "POST",
       }),
+      invalidatesTags: [{ type: "Appointments", id: "MY_APPOINTMENTS" }],
     }),
   }),
 });

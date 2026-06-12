@@ -6,6 +6,7 @@ import {
 
 const ALLOWED_PREFIXES = [
   "/api/v1/tasks",
+  "/api/v1/user",
   "/api/v1/admin",
   "/api/v1/doctor",
   "/api/v1/patient",
