@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { CreditCard, Loader2, RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +13,8 @@ import {
   useGetMyAppointmentsQuery,
   useInitPaymentMutation,
 } from "@/redux/features/patientDashboard/patientDashboardApi";
+import { useGetReviewsQuery } from "@/redux/features/review/reviewApi";
+import { RootState } from "@/redux/store";
 import { formatAppointmentSchedule, statusClass, totalPages } from "./utils";
 import { ReviewForm } from "./ReviewForm";
 
@@ -29,6 +33,7 @@ function getErrorMessage(error: unknown) {
 
 export function PatientAppointments() {
   const { toast } = useToast();
+  const user = useSelector((state: RootState) => state.auth.user);
   const [page, setPage] = useState(1);
   const { data, isError, isFetching, refetch } = useGetMyAppointmentsQuery({
     page,
@@ -36,9 +41,22 @@ export function PatientAppointments() {
     sortBy: "createdAt",
     sortOrder: "desc",
   });
+  const { data: reviewsData } = useGetReviewsQuery(
+    user?.email
+      ? {
+          patientEmail: user.email,
+          limit: 100,
+        }
+      : skipToken,
+  );
   const [initPayment, { isLoading: isPaying }] = useInitPaymentMutation();
   const appointments = data?.data ?? [];
   const pages = totalPages(data?.meta?.total, data?.meta?.limit ?? 8);
+  const reviewedAppointments = new Map(
+    (reviewsData?.data ?? [])
+      .filter((review) => review.appointmentId)
+      .map((review) => [review.appointmentId as string, review]),
+  );
 
   const payNow = async (appointmentId: string) => {
     try {
@@ -119,6 +137,8 @@ export function PatientAppointments() {
         {appointments.map((appointment) => {
           const canReview = appointment.status === "COMPLETED";
           const isUnpaid = appointment.paymentStatus === "UNPAID";
+          const existingReview =
+            appointment.review ?? reviewedAppointments.get(appointment.id) ?? null;
 
           return (
             <Card key={appointment.id}>
@@ -160,7 +180,12 @@ export function PatientAppointments() {
                       Pay Now
                     </Button>
                   ) : null}
-                  {canReview ? <ReviewForm appointmentId={appointment.id} /> : null}
+                  {canReview ? (
+                    <ReviewForm
+                      appointmentId={appointment.id}
+                      existingReview={existingReview}
+                    />
+                  ) : null}
                 </div>
               </CardContent>
             </Card>

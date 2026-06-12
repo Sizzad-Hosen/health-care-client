@@ -6,6 +6,7 @@ import { authApi } from "@/redux/features/auth/authApi";
 import { doctorDashboardApi } from "@/redux/features/doctorDashboard/doctorDashboardApi";
 import { patientDashboardApi } from "@/redux/features/patientDashboard/patientDashboardApi";
 import { publicApi } from "@/redux/features/public/publicApi";
+import { reviewApi } from "@/redux/features/review/reviewApi";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     [doctorDashboardApi.reducerPath]: doctorDashboardApi.reducer,
     [patientDashboardApi.reducerPath]: patientDashboardApi.reducer,
     [publicApi.reducerPath]: publicApi.reducer,
+    [reviewApi.reducerPath]: reviewApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -25,6 +27,7 @@ export const store = configureStore({
       doctorDashboardApi.middleware,
       patientDashboardApi.middleware,
       publicApi.middleware,
+      reviewApi.middleware,
     ),
 });
 

@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useGetMyAppointmentsQuery } from "@/redux/features/patientDashboard/patientDashboardApi";
+import { useGetReviewsQuery } from "@/redux/features/review/reviewApi";
 import { RootState } from "@/redux/store";
 import { ReviewForm } from "@/components/dashboard/patient/ReviewForm";
 import { formatAppointmentSchedule } from "@/components/dashboard/patient/utils";
@@ -25,7 +26,20 @@ export function PublicReviewCreator() {
         }
       : skipToken,
   );
+  const { data: reviewsData } = useGetReviewsQuery(
+    canReview && user?.email
+      ? {
+          patientEmail: user.email,
+          limit: 100,
+        }
+      : skipToken,
+  );
   const appointments = data?.data ?? [];
+  const reviewedAppointments = new Map(
+    (reviewsData?.data ?? [])
+      .filter((review) => review.appointmentId)
+      .map((review) => [review.appointmentId as string, review]),
+  );
 
   if (!isInitialized) {
     return <div className="h-32 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />;
@@ -111,7 +125,12 @@ export function PublicReviewCreator() {
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 {formatAppointmentSchedule(appointment)}
               </p>
-              <ReviewForm appointmentId={appointment.id} />
+              <ReviewForm
+                appointmentId={appointment.id}
+                existingReview={
+                  appointment.review ?? reviewedAppointments.get(appointment.id) ?? null
+                }
+              />
             </div>
           ))}
         </div>

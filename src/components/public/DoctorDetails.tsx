@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, MapPin, Star, Stethoscope } from "lucide-react";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { Clock, MapPin, RefreshCw, Stethoscope } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useGetDoctorByIdQuery, useGetReviewsQuery } from "@/redux/features/public/publicApi";
+import { RatingStars } from "@/components/reviews/RatingStars";
+import { useGetDoctorByIdQuery } from "@/redux/features/public/publicApi";
+import { useGetReviewsQuery } from "@/redux/features/review/reviewApi";
 import { DoctorScheduleBooking } from "./DoctorScheduleBooking";
 
 function initials(name?: string) {
@@ -20,16 +23,25 @@ function initials(name?: string) {
 
 export function DoctorDetails({ id }: { id: string }) {
   const { data, isLoading, isError } = useGetDoctorByIdQuery(id);
-  const { data: reviewsData } = useGetReviewsQuery();
   const doctor = data?.data;
+  const {
+    data: reviewsData,
+    isError: reviewsError,
+    isLoading: reviewsLoading,
+    refetch: refetchReviews,
+  } = useGetReviewsQuery(
+    doctor?.email
+      ? {
+          doctorEmail: doctor.email,
+          limit: 4,
+        }
+      : skipToken,
+  );
   const specialties =
     doctor?.doctorSpecialties
       ?.map((item) => item.specialties?.title)
       .filter(Boolean) ?? [];
-  const reviews =
-    reviewsData?.data
-      ?.filter((review) => review.doctor?.email === doctor?.email)
-      .slice(0, 4) ?? [];
+  const reviews = reviewsData?.data ?? [];
 
   if (isLoading) {
     return <div className="h-96 animate-pulse rounded-lg bg-slate-100" />;
@@ -118,15 +130,39 @@ export function DoctorDetails({ id }: { id: string }) {
           <CardContent className="p-6">
             <h2 className="text-xl font-semibold text-slate-950">Patient reviews</h2>
             <div className="mt-4 grid gap-4">
-              {reviews.length > 0 ? (
+              {reviewsLoading ? (
+                Array.from({ length: 2 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="h-28 animate-pulse rounded-md bg-slate-100"
+                  />
+                ))
+              ) : reviewsError ? (
+                <div className="rounded-md border border-red-200 bg-red-50 p-5 text-red-900">
+                  <p className="font-semibold">Could not load reviews.</p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => refetchReviews()}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    Retry
+                  </Button>
+                </div>
+              ) : reviews.length > 0 ? (
                 reviews.map((review) => (
                   <div key={review.id} className="rounded-md border border-slate-200 p-4">
-                    <div className="flex gap-1 text-amber-500">
-                      {Array.from({ length: 5 }).map((_, index) => (
-                        <Star key={index} className="h-4 w-4 fill-current" />
-                      ))}
+                    <div className="flex items-center gap-2">
+                      <RatingStars value={review.rating} />
+                      <span className="text-sm font-medium text-slate-500">
+                        {review.rating.toFixed(1)}
+                      </span>
                     </div>
-                    <p className="mt-3 text-sm text-slate-600">{review.comment}</p>
+                    <p className="mt-3 text-sm text-slate-600">
+                      {review.comment || "Helpful consultation."}
+                    </p>
                     <p className="mt-3 text-sm font-semibold text-slate-950">
                       {review.patient?.name ?? "Verified patient"}
                     </p>

@@ -40,21 +40,6 @@ export type Prescription = {
   appointment?: Appointment;
 };
 
-export type ReviewRequest = {
-  appointmentId: string;
-  rating: number;
-  comment: string;
-};
-
-export type ReviewResponse = {
-  id: string;
-  appointmentId: string;
-  doctorId: string;
-  patientId: string;
-  rating: number;
-  comment: string;
-};
-
 export type PatientQuery = {
   page?: number;
   limit?: number;

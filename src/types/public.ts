@@ -43,8 +43,11 @@ export type Doctor = {
 
 export type Review = {
   id: string;
+  appointmentId?: string;
+  doctorId?: string;
+  patientId?: string;
   rating: number;
-  comment: string;
+  comment?: string | null;
   createdAt?: string;
   patient?: {
     name?: string;
@@ -54,6 +57,21 @@ export type Review = {
     name?: string;
     email?: string;
   };
+};
+
+export type CreateReviewRequest = {
+  appointmentId: string;
+  rating: number;
+  comment?: string;
+};
+
+export type ReviewFilters = {
+  patientEmail?: string;
+  doctorEmail?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 };
 
 export type DoctorFilters = {

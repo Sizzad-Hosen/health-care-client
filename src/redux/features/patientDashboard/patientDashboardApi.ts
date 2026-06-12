@@ -7,8 +7,6 @@ import {
   PatientQuery,
   PaginatedResult,
   Prescription,
-  ReviewRequest,
-  ReviewResponse,
 } from "@/types/patient-dashboard";
 import { ApiMeta, ApiResponse } from "@/types/api";
 import { UpdateProfileRequest, UserProfile } from "@/types/auth";
@@ -128,14 +126,6 @@ export const patientDashboardApi = createApi({
         normalizeList(response),
       providesTags: ["Prescriptions"],
     }),
-    createReview: builder.mutation<ApiResponse<ReviewResponse>, ReviewRequest>({
-      query: (body) => ({
-        url: `${apiV1}/reviews`,
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["Reviews", "Appointments", "Meta"],
-    }),
     initPayment: builder.mutation<
       ApiResponse<PatientInitPaymentResponse>,
       string
@@ -150,7 +140,6 @@ export const patientDashboardApi = createApi({
 });
 
 export const {
-  useCreateReviewMutation,
   useGetMyAppointmentsQuery,
   useGetMyPrescriptionsQuery,
   useGetPatientMetaQuery,

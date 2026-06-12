@@ -4,7 +4,6 @@ import {
   DoctorFilters,
   PublicDetailResponse,
   PublicListResponse,
-  Review,
   Specialty,
 } from "@/types/public";
 
@@ -43,15 +42,11 @@ export const publicApi = createApi({
     getSpecialties: builder.query<PublicListResponse<Specialty>, void>({
       query: () => backendUrl("/specalties"),
     }),
-    getReviews: builder.query<PublicListResponse<Review>, void>({
-      query: () => backendUrl("/reviews"),
-    }),
   }),
 });
 
 export const {
   useGetDoctorByIdQuery,
   useGetDoctorsQuery,
-  useGetReviewsQuery,
   useGetSpecialtiesQuery,
 } = publicApi;
